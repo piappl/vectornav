@@ -119,12 +119,12 @@ private:
     // NED to ENU conversion
     // swap x and y and negate z
     if(use_compensated_measurements) {
-      msg_out.angular_velocity.x = msg_in->angularrate.y;
-      msg_out.angular_velocity.y = msg_in->angularrate.x;
+      msg_out.angular_velocity.x = msg_in->angularrate.x;
+      msg_out.angular_velocity.y = -msg_in->angularrate.y;
       msg_out.angular_velocity.z = -msg_in->angularrate.z;
 
-      msg_out.linear_acceleration.x = msg_in->accel.y;
-      msg_out.linear_acceleration.y = msg_in->accel.x;
+      msg_out.linear_acceleration.x = msg_in->accel.x;
+      msg_out.linear_acceleration.y = -msg_in->accel.y;
       msg_out.linear_acceleration.z = -msg_in->accel.z;
     } else {
       msg_out.angular_velocity.x = msg_in->imu_rate.y;
@@ -136,8 +136,16 @@ private:
       msg_out.linear_acceleration.z = -msg_in->imu_accel.z;
     }
 
-    msg_out.orientation = msg_in->quaternion;
+
+    msg_out.orientation.x = msg_in->quaternion.x;
+    msg_out.orientation.y = -msg_in->quaternion.y;
     msg_out.orientation.z = -msg_in->quaternion.z;
+    msg_out.orientation.w = msg_in->quaternion.w;
+
+    // tf2::Quaternion q, q_ned2enu;
+    // fromMsg(msg_out.orientation, q);
+    // q_ned2enu.setRPY(0, 0.0, M_PI / 2);
+    // msg_out.orientation = toMsg(q * q_ned2enu);
   }
 
   /** Convert VN common group data to ROS2 standard message types
