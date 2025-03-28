@@ -142,10 +142,14 @@ private:
     msg_out.orientation.z = -msg_in->quaternion.z;
     msg_out.orientation.w = msg_in->quaternion.w;
 
-    // tf2::Quaternion q, q_ned2enu;
-    // fromMsg(msg_out.orientation, q);
-    // q_ned2enu.setRPY(0, 0.0, M_PI / 2);
-    // msg_out.orientation = toMsg(q * q_ned2enu);
+    tf2::Quaternion q;
+    fromMsg(msg_out.orientation, q);
+    
+    double roll, pitch, yaw;
+    tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
+    yaw += M_PI / 2;
+    q.setRPY(roll, pitch, yaw);
+    msg_out.orientation = toMsg(q);
   }
 
   /** Convert VN common group data to ROS2 standard message types
